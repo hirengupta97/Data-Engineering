@@ -5,8 +5,7 @@
 -- Table 2 and Table 3 will refer to Table 1 for hospital information. 
 
 
-create table hospital_info (hospital_pk text primary key, state char(2), hospital_name text, address text unique, city text, zip char(5), fips_code integer 
-check (fips_code > 0), geocoded_hospital_address point);
+create table hospital_info (hospital_pk text primary key, state char(2), hospital_name text, address text unique, city text, zip char(5), fips_code integer check (fips_code > 0), geocoded_hospital_address point);
 
 
 -- Table 2: hospital_weekly
@@ -20,7 +19,7 @@ create table hospital_weekly (id serial primary key, hospital_pk text references
 all_pediatric_inpatient_beds_7_day_avg numeric check (all_pediatric_inpatient_beds_7_day_avg >= 0), all_adult_hospital_inpatient_bed_occupied_7_day_coverage numeric 
 check (all_adult_hospital_inpatient_bed_occupied_7_day_coverage >=0), all_pediatric_inpatient_bed_occupied_7_day_avg numeric check (all_pediatric_inpatient_bed_occupied_7_day_avg >= 0), 
 total_icu_beds_7_day_avg numeric check (total_icu_beds_7_day_avg >=0), icu_beds_used_7_day_avg numeric check (icu_beds_used_7_day_avg >= 0), inpatient_beds_used_covid_7_day_avg numeric check 
-(inpatient_beds_used_covid_7_day_avg >= 0), staffed_adult_icu_patients_confirmed_covid_7_day_avg numeric check (staffed_adult_icu_patients_confirmed_covid_7_day_avg >= 0));
+(inpatient_beds_used_covid_7_day_avg >= 0), staffed_adult_icu_patients_confirmed_covid_7_day_avg numeric check (staffed_icu_adult_patients_confirmed_covid_7_day_avg >= 0));
 
 
 -- Table 3: hospital_quality

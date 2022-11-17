@@ -37,11 +37,8 @@ with conn.transaction():
         geocoded_hospital_address = df.iloc[row,96]
         state, hospital_name, address, city, zip, fips_code, geocoded_hospital_address = row
         # now insert the data
-        cur.execute("insert into hospital_info (hospital_pk, state, hospital_name, "
-                    "address, city, zip, fips_code, geocoded_hospital_address) " 
-                    "values (%s, %s, %s, %s, %s, %s, %s, %s)", 
-                    (hospital_pk, state, hospital_name, address, city, zip, fips_code, geocoded_hospital_address)
-                    "ON CONFLICT (hospital_pk, state, hospital_name, address, city, zip, fips_code, geocoded_hospital_address) DO NOTHING ")
+        cur.execute("insert into hospital_info (hospital_pk, state, hospital_name, address, city, zip, fips_code, geocoded_hospital_address) values (%s, %s, %s, %s, %s, %s, %s, %s) ON CONFLICT (hospital_pk, state, hospital_name, address, city, zip, fips_code, geocoded_hospital_address) DO NOTHING",
+        (hospital_pk, state, hospital_name, address, city, zip, fips_code, geocoded_hospital_address))
 
         try:
             # make a new SAVEPOINT -- like a save in a video game
