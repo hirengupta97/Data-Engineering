@@ -39,7 +39,12 @@ with conn.transaction():
 #        state, hospital_name, address, city, zip, 
 #       fips_code, geocoded_hospital_address = row
         # now insert the data
+<<<<<<< HEAD
+        cur.execute("insert into hospital_info (hospital_pk, state, hospital_name, address, city, zip, fips_code, geocoded_hospital_address) values (%s, %s, %s, %s, %s, %s, %s, %s) ON CONFLICT (hospital_pk, state, hospital_name, address, city, zip, fips_code, geocoded_hospital_address) DO NOTHING",
+        (hospital_pk, state, hospital_name, address, city, zip, fips_code, geocoded_hospital_address))
+=======
         cur.execute("insert into hospital_info (hospital_pk, state, hospital_name, address, city, zip, fips_code, geocoded_hospital_address) values (%s, %s, %s, %s, %s, %s, %s, %s)" "ON CONFLICT (hospital_pk) DO NOTHING ", (hospital_pk, state, hospital_name, address, city, zip, fips_code, geocoded_hospital_address))
+>>>>>>> 30d43d5ae600cc91e531bcefccaa17f5a0a70017
 
         try:
             # make a new SAVEPOINT -- like a save in a video game
