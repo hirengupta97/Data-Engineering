@@ -5,12 +5,7 @@
 -- Table 2 and Table 3 will refer to Table 1 for hospital information. 
 
 
-<<<<<<< HEAD
 create table hospital_info (hospital_pk text primary key, state char(2), hospital_name text, address text unique, city text, zip char(5), fips_code integer check (fips_code > 0), geocoded_hospital_address point);
-=======
-create table hospital_inf (hospital_pk text primary key, state char(2), hospital_name text, address text, city text, zip numeric, fips_code text
-, geocoded_hospital_address point);
->>>>>>> 30d43d5ae600cc91e531bcefccaa17f5a0a70017
 
 
 -- Table 2: hospital_weekly
@@ -19,6 +14,7 @@ create table hospital_inf (hospital_pk text primary key, state char(2), hospital
 -- We create a table for weekly updates of the hospital operations in order to 
 -- keep track of the changes in the status of each hospital. 
 
+-- new comment
 
 create table hospital_weekly (id serial primary key, hospital_pk text references hospital_inf, collection_week date, all_adult_hospital_beds_7_day_avg text, 
 all_pediatric_inpatient_beds_7_day_avg text,
