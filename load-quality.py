@@ -7,8 +7,8 @@ import sys
 
 # Connect to the sculptor
 conn = psycopg.connect(
-    host="sculptor.stat.cmu.edu", dbname="dshim",
-    user="dshim", password="raiXa2ahd"
+    host="sculptor.stat.cmu.edu", dbname="hireng",
+    user="hireng", password="aiVee0Ohs"
 )
 cur = conn.cursor()
 
