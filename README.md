@@ -7,7 +7,9 @@ Specifically, in this Github there are three main components: schema.sql, load-h
 In this file, we identified three schemas - hospital_info, hospital_weekly, and hospital_quality. Each schema works as follows:
 
 Table 1: Hospital_info: a table that stores permanent information about the hospitals 
+
 Table 2: Hospital_weekly: a table that stores weekly updates regarding the hospital operation (these features will be updated weekly)
+
 Table 3: Hospital_quality: a table that stores overall quality rating (these features will be updated several times a year)
 
 ### load-hhs.py
