@@ -11,22 +11,23 @@ Table 2: Hospital_weekly: a table that stores weekly updates regarding the hospi
 Table 3: Hospital_quality: a table that stores overall quality rating (these features will be updated several times a year)
 
 ### load-hhs.py
-I this file, we create two execution functions. 
+In this file, we create two execution functions. 
 
 For table1: Update the table hospital_info, which only stores permanent information about the hospitals. Since these are permanent information they should stay the same when the weekly updates take place. Hence, when there is any conflict (i.e. when duplicates exist), we just ignore the row and proceed to the next row to store the information (by using ON CONFLICT DO NOTHING).
 
 For table2:  Upate the table hospital_weekly, which stores weekly updated information about the hospitals. Since these are changing information, instead of ON CONFLICT DO NOTHING, we perform try-except clause, for which allows us to take an action (e.g. store the fail-to-insert data into a different dataframe) in the incident of any failure.
 
-Specific
-(In this file, we first connect to the sculptor with conn = psycopg.connect. We log into the server with our designated id and password to upload the data. We acquire file name from the command line (2nd element) using argv[1], and transform the given .csv file into a dataframe that we can manipulate within Python.)
+(Please check individual files for specific comments.)
 
-We begin with data cleaning: we replace Nan values to None, which allows Python to recognize None = null values for our qunatitative analysis later . Then, we insert each row of the dataset to SQL table using SQL INSERT VALUE INTO query. In order to perform this, we need to perform for-loop execution for every row in the dataframe, identify each column in the dataframe (as pre-defined from SQL schema), and insert those values into the appropriate variable location within the schema. 
-Cast the value "n" as float otherwise
-Instantiate a varible that counts the number of rows 
-for which values fail to be inserted into the database
-Create an empty dataframe that will store the rows 
-for which values fail to be inserted into the database
-Instantiate varibles that counts the number rows 
+We begin with data cleaning: we replace Nan values to None, which allows Python to recognize None = null values for our qunatitative analysis later. Then, we insert each row of the dataset to SQL table using SQL INSERT VALUE INTO query. In order to perform this, we need to perform for-loop execution for every row in the dataframe, identify each column in the dataframe (as pre-defined from SQL schema), and insert those values into the appropriate variable location within the schema. 
 
 
 ### load-quality.py
+
+In this file, we create one execution functions. 
+
+For table3: Upate the table hospital_quality, which stores irregular updates about hospital quality information. Since these are also changing information, instead of ON CONFLICT DO NOTHING, we perform try-except clause, for which allows us to take an action (e.g. store the fail-to-insert data into a different dataframe) in the incident of any failure.
+
+(Please check individual files for specific comments.)
+
+Once again, we begin with data cleaning: we replace Nan values to None, which allows Python to recognize None = null values for our qunatitative analysis later. Then, we insert each row of the dataset to SQL table using SQL INSERT VALUE INTO query. In order to perform this, we need to perform for-loop execution for every row in the dataframe, identify each column in the dataframe (as pre-defined from SQL schema), and insert those values into the appropriate variable location within the schema. 
