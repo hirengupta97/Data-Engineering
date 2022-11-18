@@ -89,7 +89,7 @@ with conn.transaction():
             # If the execution fails, store the fail-to-insert row (entire row)
             # into the dataframe df2
             print("Insert failed!", e)
-            df2.loc[nrow] = df.iloc[row, [0, 8, 9, 10, 12]]
+            df2.loc[nrow] = list(df.iloc[row, [0, 8, 9, 10, 12]])
             # Add a count to the number of rows
             # for which values fail to be inserted into the database
             nrow += 1
