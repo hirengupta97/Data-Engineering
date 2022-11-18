@@ -20,12 +20,13 @@ date = sys.argv[1]
 # Identify -999999 and Nan as missing values
 missing_values = [-999999, np.nan]
 # Make dataframe from the imported .csv file
-# affirm that pre-identified missing values (-999999 and Nan) 
+# affirm that pre-identified missing values (-999999 and Nan)
 # as na_values within the dataframe
 df = pd.read_csv(file_name, na_values=missing_values)
-# If the value is "Not Available" in the column "Hospital overall rating", 
+# If the value is "Not Available" in the column "Hospital overall rating"
 # convert into Nan value
-df.loc[df["Hospital overall rating"]== "Not Available","Hospital overall rating"]=np.nan
+df.loc[df["Hospital overall rating"] ==
+       "Not Available", "Hospital overall rating"] = np.nan
 
 # Enable auto commit
 conn.autocommit = True
@@ -40,17 +41,18 @@ def if_float_for_str(n):
     else:
         return None
 
-# Create an empty dataframe that will store the rows 
+
+# Create an empty dataframe that will store the rows
 # for which values fail to be inserted into the database
 df2 = pd.DataFrame(columns=[
-    "hospital_pk", "type_of_hospital", 
+    "hospital_pk", "type_of_hospital",
     "ownership", "emergency", "overall_quality_rating"])
 
-# Instantiate a varible that counts the number of rows 
+# Instantiate a varible that counts the number of rows
 # for which values fail to be inserted into the database
 nrow = 0
-# Instantiate varibles that counts the number rows 
-# inserted into pre-defined SQL schema 
+# Instantiate varibles that counts the number rows
+# inserted into pre-defined SQL schema
 # (hospital_quality)
 num_rows_inserted_quality = 0
 
@@ -67,12 +69,12 @@ with conn.transaction():
         ownership = df.iloc[row, 9]
         emergency = df.iloc[row, 10]
         overall_quality_rating = df.iloc[row, 12]
-        # Call try-except so that we can store 
+        # Call try-except so that we can store
         # fail-to-upload values into df2
         try:
             with conn.transaction():
                 cur.execute(
-                    # Insert the pre-identified values for each variable into SQL table
+                    # Insert pre-identified values for each variable into SQL
                     # for each row in the dataframe
                     "insert into hospital_quality"
                     "(facility_id, update_time, type_of_hospital,"
@@ -88,7 +90,7 @@ with conn.transaction():
             # into the dataframe df2
             print("Insert failed!", e)
             df2.loc[nrow] = df.iloc[row, [0, 8, 9, 10, 12]]
-            # Add a count to the number of rows 
+            # Add a count to the number of rows
             # for which values fail to be inserted into the database
             nrow += 1
         else:

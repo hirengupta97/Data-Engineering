@@ -41,7 +41,7 @@ with conn.transaction():
         fips_code = df.iloc[row, 9]
         geocoded = (df.iloc[row, 96])
         # Since geocoded constitues of 2 variables, logitude and latitude,
-        # split the values into 2 different components (logitude and latitude) 
+        # split the values into 2 different components (logitude and latitude)
         # if value is not None
         if (((geocoded is None))):
             longitude = None
@@ -51,7 +51,7 @@ with conn.transaction():
             latitude = float(geocoded[6:].strip("()").split(" ")[1])
         # Execute SQL query
         # If ON CONFLICT (if hospital data already exists),
-        # DO NOTHING (we simply do not add any further information in this case)
+        # DO NOTHING (we do not add any further information in this case)
         cur.execute(
             # Insert the pre-identified values for each variable into SQL table
             # for each row in the dataframe
@@ -137,7 +137,7 @@ with conn.transaction():
         try:
             with conn.transaction():
                 cur.execute(
-                    # Insert the pre-identified values for each variable into SQL table
+                    # Insert pre-identified values for each variable into SQL
                     # for each row in the dataframe
                     "insert into hospital_weekly(hospital_pk,"
                     "collection_week, all_adult_hospital_beds_7_day_avg,"
