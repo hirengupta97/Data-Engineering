@@ -31,4 +31,4 @@ total_icu_beds_7_day_avg numeric check (total_icu_beds_7_day_avg >=0), icu_beds_
 -- different between the two data sets. 
 
 
-create table hospital_quality (id serial primary key, facility_id text, update_time date check (update_time <= current_date), type_of_hospital text, ownership text, emergency text, overall_quality_rating numeric check (overall_quality_rating > 0));
+create table hospital_quality (id serial primary key, hospital_pk text references hospital_info, update_time date check (update_time <= current_date), type_of_hospital text, ownership text, emergency text, overall_quality_rating numeric check (overall_quality_rating > 0));

@@ -63,7 +63,7 @@ with conn.transaction():
     for row in range(df.shape[0]):
         # Identify each column in the dataframe
         # (as pre-defined from SQL schema)
-        facility_id = df.iloc[row, 0]
+        hospital_pk = df.iloc[row, 0]
         time = date
         type_of_hospital = df.iloc[row, 8]
         ownership = df.iloc[row, 9]
@@ -77,10 +77,10 @@ with conn.transaction():
                     # Insert pre-identified values for each variable into SQL
                     # for each row in the dataframe
                     "insert into hospital_quality"
-                    "(facility_id, update_time, type_of_hospital,"
+                    "(hospital_pk, update_time, type_of_hospital,"
                     "ownership, emergency, overall_quality_rating)"
                     "values ( %s, %s, %s, %s, %s, %s)",
-                    (facility_id, time,
+                    (hospital_pk, time,
                         type_of_hospital,
                         ownership,
                         emergency,
