@@ -1,0 +1,2 @@
+,hospital_pk,collection_week,all_adult_hospital_beds_7_day_avg,all_pediatric_inpatient_beds_7_day_avg,all_adult_hospital_inpatient_bed_occupied_7_day_coverage,all_pediatric_inpatient_bed_occupied_7_day_avg,total_icu_beds_7_day_avg,icu_beds_used_7_day_avg,inpatient_beds_used_covid_7_day_avg,staffed_icu_adult_patients_confirmed_covid_7_day_avg
+0,111337,2022-09-23,30.0,-1.0,7,0.0,0.0,0.0,0.0,0.0
