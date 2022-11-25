@@ -48,6 +48,36 @@ df2 = pd.DataFrame(columns=[
     "hospital_pk", "type_of_hospital",
     "ownership", "emergency", "overall_quality_rating"])
 
+# Insert each row of the dataset to SQL table
+# Connect to SQL and make transaction
+with conn.transaction():
+    # Perform for-loop execution for every row in the dataframe
+    for row in range(df.shape[0]):
+        # Identify each column in the dataframe
+        # (as pre-defined from SQL schema)
+        hospital_pk = df.iloc[row, 0]
+        state = df.iloc[row, 4]
+        hospital_name = df.iloc[row, 1]
+        address = df.iloc[row, 2]
+        city = df.iloc[row, 3]
+        zip = df.iloc[row, 5]
+        # Execute SQL query
+        # If ON CONFLICT (if hospital data already exists),
+        # DO NOTHING (we do not add any further information in this case)
+        cur.execute(
+            # Insert the pre-identified values for each variable into SQL table
+            # for each row in the dataframe
+            "insert into hospital_info (hospital_pk, state, hospital_name,"
+            "address, city, zip)"
+            "values (%s, %s, %s, %s, %s, %s)"
+            "ON CONFLICT (hospital_pk) DO NOTHING ",
+            (hospital_pk,
+                state,
+                hospital_name,
+                address, city,
+                int(zip)))
+
+
 # Instantiate a varible that counts the number of rows
 # for which values fail to be inserted into the database
 nrow = 0
