@@ -29,7 +29,7 @@ df.loc[df["Hospital overall rating"] ==
        "Not Available", "Hospital overall rating"] = np.nan
 
 # Enable auto commit
-conn.autocommit = True
+# conn.autocommit = True
 
 
 # Create a function that transforms string value to float
@@ -136,3 +136,5 @@ print(num_rows_inserted_quality)
 # Export the collection fail-to-insert data in CMS_data
 # (dataframe, df2) as a .csv file
 df2.to_csv("failed_rows_cms.csv")
+
+conn.commit()

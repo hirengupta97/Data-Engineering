@@ -23,7 +23,7 @@ df = pd.read_csv(file_name)
 df = df.replace({np.nan: None})
 
 # Enable auto commit
-conn.autocommit = True
+# conn.autocommit = True
 
 # Insert each row of the dataset to SQL table
 # Connect to SQL and make transaction
@@ -180,3 +180,5 @@ print(num_rows_inserted_weekly)
 # Export the collection fail-to-insert data
 # (dataframe, df2) as a .csv file
 df2.to_csv("failed_rows_hhs.csv")
+
+conn.commit()
