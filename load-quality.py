@@ -70,7 +70,11 @@ with conn.transaction():
             "insert into hospital_info (hospital_pk, state, hospital_name,"
             "address, city, zip)"
             "values (%s, %s, %s, %s, %s, %s)"
-            "ON CONFLICT (hospital_pk) DO NOTHING ",
+            "ON CONFLICT (hospital_pk) DO UPDATE SET state = EXCLUDED.state,"
+            "hospital_name = EXCLUDED.hospital_name,"
+            "address = EXCLUDED.address,"
+            "city = EXCLUDED.city,"
+            "zip = EXCLUDED.zip",
             (hospital_pk,
                 state,
                 hospital_name,
