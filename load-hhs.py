@@ -3,7 +3,6 @@
 import psycopg
 import pandas as pd
 import numpy as np
-import math as m
 import sys
 
 # Connect to the sculptor
@@ -20,57 +19,10 @@ file_name = sys.argv[1]
 df = pd.read_csv(file_name)
 # Replace Nan values to None
 # (this allows Python to recognize None = null values)
-df = df.replace({np.nan: None})
 
 # Enable auto commit
 # conn.autocommit = True
 
-# Insert each row of the dataset to SQL table
-# Connect to SQL and make transaction
-with conn.transaction():
-    # Perform for-loop execution for every row in the dataframe
-    for row in range(df.shape[0]):
-        # Identify each column in the dataframe
-        # (as pre-defined from SQL schema)
-        hospital_pk = df.iloc[row, 0]
-        state = df.iloc[row, 2]
-        hospital_name = df.iloc[row, 4]
-        address = df.iloc[row, 5]
-        city = df.iloc[row, 6]
-        zip = df.iloc[row, 7]
-        fips_code = df.iloc[row, 9]
-        geocoded = (df.iloc[row, 96])
-        # Since geocoded constitues of 2 variables, logitude and latitude,
-        # split the values into 2 different components (logitude and latitude)
-        # if value is not None
-        if (((geocoded is None))):
-            longitude = None
-            latitude = None
-        else:
-            longitude = float(geocoded[6:].strip("()").split(" ")[0])
-            latitude = float(geocoded[6:].strip("()").split(" ")[1])
-        # Execute SQL query
-        # If ON CONFLICT (if hospital data already exists),
-        # DO NOTHING (we do not add any further information in this case)
-        cur.execute(
-            # Insert the pre-identified values for each variable into SQL table
-            # for each row in the dataframe
-            "insert into hospital_info (hospital_pk, state, hospital_name,"
-            "address, city, zip, fips_code, longitude, latitude)"
-            "values (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            "ON CONFLICT (hospital_pk) DO UPDATE SET state = EXCLUDED.state,"
-            "hospital_name = EXCLUDED.hospital_name,"
-            "address = EXCLUDED.address,"
-            "city = EXCLUDED.city,"
-            "zip = EXCLUDED.zip",
-            (hospital_pk,
-                state,
-                hospital_name,
-                address, city,
-                int(zip),
-                fips_code,
-                longitude,
-                latitude))
 
 # Instantiate varibles that counts the number rows
 # inserted into pre-defined SQL schema
@@ -84,12 +36,15 @@ missing_values = [-999999, np.nan]
 # as na_values within the dataframe
 df = pd.read_csv(file_name, na_values=missing_values)
 
+df = df.replace({np.nan: None})
 
 # Create a function that transforms Nan value to None
 # (this allows Python to recognize None = null values)
 # Cast the value "n" as float otherwise
+
+
 def if_float(n):
-    if (m.isnan(n)):
+    if (n is None):
         return None
     else:
         return float(n)
@@ -105,6 +60,13 @@ df2 = pd.DataFrame(
     columns=[
         "hospital_pk",
         "collection_week",
+        "state",
+        "hospital_name",
+        "address",
+        "city",
+        "zip",
+        "fips_code",
+        "geocoded_hospital_address",
         "all_adult_hospital_beds_7_day_avg",
         "all_pediatric_inpatient_beds_7_day_avg",
         "all_adult_hospital_inpatient_bed_occupied_7_day_coverage",
@@ -119,6 +81,7 @@ df2 = pd.DataFrame(
 # (hospital_weekly)
 num_rows_inserted_weekly = 0
 
+
 # Insert each row of the dataset to SQL table
 # Connect to SQL and make transaction
 with conn.transaction():
@@ -126,20 +89,75 @@ with conn.transaction():
     for row in range(df.shape[0]):
         # Identify each column in the dataframe
         # (as pre-defined from SQL schema)
-        hospital_pk = df.iloc[row, 0]
-        collection_week = df.iloc[row, 1]
-        all_adult_hospital_beds_7_day_avg = df.iloc[row, 12]
-        all_pediatric_inpatient_beds_7_day_avg = df.iloc[row, 111]
-        adult_inpatient_bed_occupied_coverage = df.iloc[row, 55]
-        pediatric_inpatient_occupied = df.iloc[row, 108]
-        total_icu_beds_7_day_avg = df.iloc[row, 22]
-        icu_beds_used_7_day_avg = df.iloc[row, 24]
-        inpatient_beds_used_covid_7_day_avg = df.iloc[row, 16]
-        staffed_icu_adult_confirmed_covid_ = df.iloc[row, 27]
+        hospital_pk = str(df.loc[row, "hospital_pk"])
+        state = df.loc[row, "state"]
+        hospital_name = df.loc[row, "hospital_name"]
+        address = df.loc[row, "address"]
+        city = df.loc[row, "city"]
+        zip = str(df.loc[row, "zip"])
+        fips_code = str(df.loc[row, "fips_code"])
+        geocoded = (df.loc[row, "geocoded_hospital_address"])
+        # Since geocoded constitues of 2 variables, logitude and latitude,
+        # split the values into 2 different components (logitude and latitude)
+        # if value is not None
+        if (((geocoded is None))):
+            longitude = None
+            latitude = None
+        else:
+            longitude = if_float(geocoded[6:].strip("()").split(" ")[0])
+            latitude = if_float(geocoded[6:].strip("()").split(" ")[1])
+        collection_week = df.loc[row, "collection_week"]
+        all_adult_hospital_beds_7_day_avg = df.loc[
+                    row,
+                    "all_adult_hospital_beds_7_day_avg"]
+        all_pediatric_inpatient_beds_7_day_avg = df.loc[
+                    row,
+                    "all_pediatric_inpatient_beds_7_day_avg"]
+        adult_inpatient_bed_occupied_coverage = df.loc[
+                    row,
+                    "all_adult_hospital_inpatient_bed_occupied_7_day_coverage"]
+        pediatric_inpatient_occupied = df.loc[
+                    row,
+                    "all_pediatric_inpatient_bed_occupied_7_day_avg"]
+        total_icu_beds_7_day_avg = df.loc[
+                    row,
+                    "total_icu_beds_7_day_avg"]
+        icu_beds_used_7_day_avg = df.loc[
+                    row,
+                    "icu_beds_used_7_day_avg"]
+        inpatient_beds_used_covid_7_day_avg = df.loc[
+                    row,
+                    "inpatient_beds_used_covid_7_day_avg"]
+        staffed_icu_adult_confirmed_covid_ = df.loc[
+                    row,
+                    "staffed_icu_adult_patients_confirmed_covid_7_day_avg"]
         # Call try-except so that we can store
         # fail-to-upload values into df2
         try:
             with conn.transaction():
+                # Execute SQL query
+                # If ON CONFLICT (if hospital data already exists),
+                # DO NOTHING (only update new information in this case)
+                cur.execute(
+                    # Insert pre-identified values for each variable into SQL
+                    # for each row in the dataframe
+                    "insert into hospital_info (hospital_pk, state,"
+                    "hospital_name, address, city, zip, fips_code, longitude,"
+                    "latitude) values (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                    "ON CONFLICT (hospital_pk) DO UPDATE SET "
+                    "state = EXCLUDED.state,"
+                    "hospital_name = EXCLUDED.hospital_name,"
+                    "address = EXCLUDED.address,"
+                    "city = EXCLUDED.city,"
+                    "zip = EXCLUDED.zip",
+                    (hospital_pk,
+                        state,
+                        hospital_name,
+                        address, city,
+                        zip,
+                        fips_code,
+                        longitude,
+                        latitude))
                 cur.execute(
                     # Insert pre-identified values for each variable into SQL
                     # for each row in the dataframe
@@ -166,8 +184,25 @@ with conn.transaction():
             # If the execution fails, store the fail-to-insert row (entire row)
             # into the dataframe df2
             print("Insert failed!", e)
-            df2.loc[nrow] = list(df.iloc[
-                row, [0, 1, 12, 111, 55, 108, 22, 24, 16, 27]])
+            df2.loc[nrow] = list(df.loc[
+                row, ["hospital_pk",
+                      "collection_week",
+                      "state",
+                      "hospital_name",
+                      "address",
+                      "city",
+                      "zip",
+                      "fips_code",
+                      "geocoded_hospital_address",
+                      "all_adult_hospital_beds_7_day_avg",
+                      "all_pediatric_inpatient_beds_7_day_avg",
+                      "all_adult_hospital_inpatient"
+                      "_bed_occupied_7_day_coverage",
+                      "all_pediatric_inpatient_bed_occupied_7_day_avg",
+                      "total_icu_beds_7_day_avg",
+                      "icu_beds_used_7_day_avg",
+                      "inpatient_beds_used_covid_7_day_avg",
+                      "staffed_icu_adult_patients_confirmed_covid_7_day_avg"]])
             # Add a count to the number of rows
             # for which values fail to be inserted into the database
             nrow += 1
@@ -186,3 +221,4 @@ print(num_rows_inserted_weekly)
 df2.to_csv("failed_rows_hhs.csv")
 
 conn.commit()
+conn.close()
