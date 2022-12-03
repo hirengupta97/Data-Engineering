@@ -1,2 +1,1 @@
 ,hospital_pk,collection_week,state,hospital_name,address,city,zip,fips_code,geocoded_hospital_address,all_adult_hospital_beds_7_day_avg,all_pediatric_inpatient_beds_7_day_avg,all_adult_hospital_inpatient_bed_occupied_7_day_coverage,all_pediatric_inpatient_bed_occupied_7_day_avg,total_icu_beds_7_day_avg,icu_beds_used_7_day_avg,inpatient_beds_used_covid_7_day_avg,staffed_icu_adult_patients_confirmed_covid_7_day_avg
-0,111337,2022-09-23,GA,ELBERT MEMORIAL HOSPITAL,4 MEDICAL DRIVE,ELBERTON,30635,13105.0,POINT (-82.875634 34.113105),30.0,-1.0,7,0.0,0.0,0.0,0.0,0.0
