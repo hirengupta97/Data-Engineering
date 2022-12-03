@@ -7,11 +7,12 @@ import sys
 
 # Connect to the sculptor
 conn = psycopg.connect(
-    host="sculptor.stat.cmu.edu", dbname="hireng",
-    user="hireng", password="aiVee0Ohs"
+    host="sculptor.stat.cmu.edu", dbname="ruilinw",
+    user="ruilinw", password="Eip8oosei"
 )
 cur = conn.cursor()
-
+n_start = pd.read_sql_query("select count(*) from hospital_info;",
+                            conn).iloc[0, 0]
 # Acquire file name from the command line (2nd element)
 file_name = sys.argv[1]
 
@@ -80,8 +81,6 @@ df2 = pd.DataFrame(
 # inserted into pre-defined SQL schema
 # (hospital_weekly)
 num_rows_inserted_weekly = 0
-
-
 # Insert each row of the dataset to SQL table
 # Connect to SQL and make transaction
 with conn.transaction():
@@ -213,12 +212,14 @@ with conn.transaction():
             num_rows_inserted_weekly += 1
 
 # Print number of rows where updates failed
-print(nrow)
+print("The number of failed updates is ", nrow)
 # Print the number of rows where updates succeeded
-print(num_rows_inserted_weekly)
+print("The number of successful updates is ", num_rows_inserted_weekly)
 # Export the collection fail-to-insert data
 # (dataframe, df2) as a .csv file
 df2.to_csv("failed_rows_hhs.csv")
-
+n_end = pd.read_sql_query("select count(*) from hospital_info;",
+                          conn).iloc[0, 0]
+print("The number of newly added hospital is ", n_end-n_start)
 conn.commit()
 conn.close()
