@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from tabulate import tabulate
 import warnings
 import plotly.express as px
-# import streamlit as st
+import streamlit as st
 
 
 warnings.filterwarnings("ignore")
@@ -110,10 +110,17 @@ df = df.set_index(df.index + 1)
 df5 = df5.set_index(df5.index + 1)
 df6 = df6.set_index(df6.index + 1)
 
-plots = lw_date.plot(kind="bar", x="collection_week",
+st.title("Nice Title Here")
+
+fig, ax = plt.subplots()
+
+plots = lw_date.plot(ax=ax, kind="bar", x="collection_week",
                      y="count", xlabel="Collection Weeks", ylabel="Count")
 
-print(tabulate(lw_date, headers=lw_date.columns, tablefmt='psql'))
+
+
+st.table(lw_date)
+#st.write(tabulate(lw_date, headers=lw_date.columns, tablefmt='simple'))
 
 for bar in plots.patches:
     plt.annotate(format(bar.get_height()),
@@ -122,8 +129,10 @@ for bar in plots.patches:
                  size=10, xytext=(0, 8),
                  textcoords='offset points')
 
+ax.get_legend().remove()
 
-plt.show()
+st.pyplot(fig)
+# plt.show()
 
 
 plots1 = beds.plot(kind="bar", x="collection_week", xlabel="Beds Status",
