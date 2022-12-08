@@ -12,25 +12,34 @@ import streamlit as st
 
 warnings.filterwarnings("ignore")
 conn = psycopg.connect(
-    host="sculptor.stat.cmu.edu", dbname="hireng",
-    user="hireng", password="aiVee0Ohs"
+    host="sculptor.stat.cmu.edu", dbname="ruilinw",
+    user="ruilinw", password="Eip8oosei"
 )
 cur = conn.cursor()
 
-d = pd.read_sql_query("select collection_week, count(*) from hospital_weekly "
-                      "where collection_week = (select max(collection_week) "
-                      "from hospital_weekly) group by collection_week;", conn)
+# d = pd.read_sql_query("SELECT collection_week, count(*)"
+#                       "FROM hospital_weekly "
+#                       "WHERE collection_week = (SELECT max(collection_week) "
+#                       "FROM hospital_weekly) "
+#                       "GROUP BY collection_week;",
+#                       conn)
 
+# Q1 A summary of how many hospital records were loaded in the most recent
+# week, and how that compares to previous weeks.
 
-lw_date = pd.read_sql_query("select collection_week, count(*) as count "
-                            "from hospital_weekly group by collection_week "
-                            "order by collection_week desc",
+records = pd.read_sql_query("SELECT collection_week, count(*) AS count "
+                            "FROM hospital_weekly "
+                            "GROUP BY collection_week "
+                            "ORDER BY collection_week desc ",
                             conn)
 
+# Q2 A table summarizing the number of adult and pediatric beds available
+# this week, the number used, and the number used by patients with COVID,
+# compared to the 4 most recent weeks
 
-beds = pd.read_sql_query("select collection_week, "
-                         "sum(all_adult_hospital_beds_7_day_avg)"
-                         " AS adult_beds_available, "
+beds = pd.read_sql_query("SELECT collection_week, "
+                         "sum(all_adult_hospital_beds_7_day_avg) "
+                         "AS adult_beds_available, "
                          "sum(all_pediatric_inpatient_beds_7_day_avg) "
                          "AS pediatric_beds_available, "
                          "sum(all_adult_hospital_inpatient_bed_"
@@ -38,90 +47,158 @@ beds = pd.read_sql_query("select collection_week, "
                          "AS adult_beds_occupied, "
                          "sum(all_pediatric_inpatient_bed_occupied_7_day_avg) "
                          "AS pediatric_beds_occupied, "
-                         "sum(inpatient_beds_used_covid_7_day_avg) AS "
-                         "inpatient_beds_used_covid from hospital_weekly "
-                         "group by collection_week; ", conn)
+                         "sum(inpatient_beds_used_covid_7_day_avg) "
+                         "AS inpatient_beds_used_covid "
+                         "FROM hospital_weekly "
+                         "GROUP BY collection_week; ",
+                         conn)
 
-quality = pd.read_sql_query("select overall_quality_rating, sum(bed_in_use) "
-                            "AS bed_in_use from (select hospital_pk, "
+
+# Q3 A graph or table summarizing the fraction of beds currently in use by
+# hospital quality rating, so we can compare high-quality
+# and low-quality hospitals
+
+quality = pd.read_sql_query("SELECT overall_quality_rating, "
+                            "sum(bed_in_use) AS bed_in_use "
+                            "FROM (SELECT hospital_pk, "
                             "sum(all_adult_hospital_inpatient_bed_occupied_"
                             "7_day_coverage) + sum(all_pediatric_inpatient_"
                             "bed_occupied_7_day_avg) AS bed_in_use "
-                            "from hospital_weekly where collection_week"
-                            "=(select max(collection_week)"
-                            " from hospital_weekly) group by hospital_pk) A "
-                            "join (select hospital_pk, overall_quality_rating "
-                            "from hospital_quality) B on A.hospital_pk"
-                            "=B.hospital_pk group by overall_quality_rating "
-                            "order by overall_quality_rating asc;", conn)
+                            "FROM hospital_weekly "
+                            "WHERE collection_week = "
+                            "(SELECT max(collection_week) "
+                            "FROM hospital_weekly) "
+                            "GROUP BY hospital_pk) A "
+                            "JOIN (SELECT hospital_pk, overall_quality_rating "
+                            "FROM hospital_quality) B ON A.hospital_pk = "
+                            "B.hospital_pk "
+                            "GROUP BY overall_quality_rating "
+                            "ORDER BY overall_quality_rating ASC;",
+                            conn)
 
-covid = pd.read_sql_query("select collection_week, "
+# Q4 A plot of the total number of hospital beds used per week, over all time,
+# split into all cases and COVID cases
+
+covid = pd.read_sql_query("SELECT collection_week, "
                           "sum(all_adult_hospital_inpatient_bed_occupied_"
                           "7_day_coverage) + sum(all_pediatric_inpatient_bed_"
                           "occupied_7_day_avg) AS bed_in_use_all_cases,"
                           "sum(inpatient_beds_used_covid_7_day_avg) AS "
-                          "bed_in_use_covid from hospital_weekly group by "
-                          "collection_week order by collection_week asc;",
+                          "bed_in_use_covid "
+                          "FROM hospital_weekly "
+                          "GROUP BY collection_week "
+                          "ORDER BY collection_week ASC;",
                           conn)
 
-df = pd.read_sql_query(
-        "select state, sum(covid_cases) as total_covid_cases from "
-        "(select hospital_pk, state from hospital_info)A join "
-        "(select hospital_pk, sum(inpatient_beds_used_covid_7_day_avg)"
-        " AS covid_cases from hospital_weekly where collection_week=(select "
-        "max(collection_week) from hospital_weekly) group by "
-        "hospital_pk) B on A.hospital_pk=B.hospital_pk group by "
-        "state; ", conn)
+# Q5 A map showing the number of COVID cases by state (the first two digits of
+# a hospital ZIP code is its state)
 
-df5 = pd.read_sql_query(
-    "select state, covid_cases_ct, covid_cases_lw "
-    "from (select state, sum(case when collection_week = (select "
-    "max(collection_week) from hospital_weekly) then "
-    "inpatient_beds_used_covid_7_day_avg end) as covid_cases_ct,"
-    "sum(case when collection_week = (select max(collection_week) "
-    "from hospital_weekly where collection_week<(select max(collection_week) "
-    "from hospital_weekly)) then inpatient_beds_used_covid_7_day_avg end) "
-    "as covid_cases_lw from (Select hospital_pk, state from hospital_info)A "
-    "Join (select hospital_pk,collection_week, "
-    "inpatient_beds_used_covid_7_day_avg from hospital_weekly)B on "
-    "A.hospital_pk=B.hospital_pk Group by state) AS C where "
-    "covid_cases_ct>covid_cases_lw;", conn)
+map_1 = pd.read_sql_query("SELECT state, sum(covid_cases) "
+                          "AS total_covid_cases "
+                          "FROM (SELECT hospital_pk, state "
+                          "FROM hospital_info) A "
+                          "JOIN (SELECT hospital_pk, "
+                          "sum(inpatient_beds_used_covid_7_day_avg) "
+                          "AS covid_cases "
+                          "FROM hospital_weekly "
+                          "WHERE collection_week = (SELECT "
+                          "max(collection_week) "
+                          "FROM hospital_weekly) "
+                          "GROUP BY hospital_pk) B "
+                          "ON A.hospital_pk = B.hospital_pk "
+                          "GROUP BY state; ",
+                          conn)
 
-df6 = pd.read_sql_query(
-    "select hospital_name, address, abs(covid_cases_ct - covid_cases_lw) as "
-    "diff from (select A.hospital_pk, address, hospital_name, sum(case when "
-    "collection_week = (select max(collection_week) from hospital_weekly) then"
-    " inpatient_beds_used_covid_7_day_avg end) as covid_cases_ct,"
-    "sum(case when collection_week = (select max(collection_week) "
-    "from hospital_weekly where collection_week<(select max(collection_week) "
-    "from hospital_weekly)) then inpatient_beds_used_covid_7_day_avg end) "
-    "as covid_cases_lw from (Select hospital_pk, hospital_name, address from "
-    "hospital_info)A Join (select hospital_pk,collection_week, "
-    "inpatient_beds_used_covid_7_day_avg from hospital_weekly)B on "
-    "A.hospital_pk=B.hospital_pk group by A.hospital_pk, A.hospital_name, "
-    "A.address) AS C where covid_cases_ct is not null and covid_cases_lw "
-    "is not null order by diff desc limit 10;", conn)
+# Q6 A table of the states in which the number of cases has increased
+# by the most since last week
 
-lw_date = lw_date.set_index(lw_date.index + 1)
+covid_2 = pd.read_sql_query("SELECT state, covid_cases_ct, covid_cases_lw "
+                            "FROM (SELECT state, sum("
+                            "CASE WHEN collection_week = "
+                            "(SELECT max(collection_week) "
+                            "FROM hospital_weekly) "
+                            "THEN inpatient_beds_used_covid_7_day_avg "
+                            "END) AS covid_cases_ct, sum("
+                            "CASE WHEN collection_week = "
+                            "(SELECT max(collection_week) "
+                            "FROM hospital_weekly "
+                            "WHERE collection_week < ("
+                            "SELECT max(collection_week) "
+                            "FROM hospital_weekly)) "
+                            "THEN inpatient_beds_used_covid_7_day_avg "
+                            "END) AS covid_cases_lw "
+                            "FROM (SELECT hospital_pk, state "
+                            "FROM hospital_info) A "
+                            "JOIN (SELECT hospital_pk,collection_week, "
+                            "inpatient_beds_used_covid_7_day_avg "
+                            "FROM hospital_weekly) B "
+                            "ON A.hospital_pk = B.hospital_pk "
+                            "GROUP BY state) AS C "
+                            "WHERE covid_cases_ct > covid_cases_lw;",
+                            conn)
+
+# A table of the hospitals (including names and locations) with the
+# largest changes in COVID cases in the last week
+
+covid_3 = pd.read_sql_query("SELECT hospital_name, address, "
+                            "abs(covid_cases_ct - covid_cases_lw) AS diff "
+                            "FROM (SELECT A.hospital_pk, "
+                            "address, hospital_name, sum("
+                            "CASE WHEN collection_week = ("
+                            "SELECT max(collection_week) "
+                            "FROM hospital_weekly) "
+                            "THEN inpatient_beds_used_covid_7_day_avg "
+                            "END) AS covid_cases_ct, sum("
+                            "CASE WHEN collection_week = ("
+                            "SELECT max(collection_week) "
+                            "FROM hospital_weekly "
+                            "WHERE collection_week < "
+                            "(SELECT max(collection_week) "
+                            "FROM hospital_weekly)) "
+                            "THEN inpatient_beds_used_covid_7_day_avg "
+                            "END) AS covid_cases_lw "
+                            "FROM (SELECT hospital_pk, hospital_name, address "
+                            "FROM hospital_info) A "
+                            "JOIN (SELECT hospital_pk,collection_week, "
+                            "inpatient_beds_used_covid_7_day_avg "
+                            "FROM hospital_weekly) B "
+                            "ON A.hospital_pk = B.hospital_pk "
+                            "GROUP BY A.hospital_pk, A.hospital_name, "
+                            "A.address) AS C "
+                            "WHERE covid_cases_ct IS NOT NULL "
+                            "AND covid_cases_lw IS NOT NULL "
+                            "ORDER BY diff DESC "
+                            "LIMIT 10;",
+                            conn)
+
+# Setting the index from 1
+records = records.set_index(records.index + 1)
 beds = beds.set_index(beds.index + 1)
 quality = quality.set_index(quality.index + 1)
 covid = covid.set_index(covid.index + 1)
-df = df.set_index(df.index + 1)
-df5 = df5.set_index(df5.index + 1)
-df6 = df6.set_index(df6.index + 1)
+map_1 = map_1.set_index(map_1.index + 1)
+covid_2 = covid_2.set_index(covid_2.index + 1)
+covid_3 = covid_3.set_index(covid_3.index + 1)
 
-st.title("Nice Title Here")
+# Implement streamlit
+st.title("Hospital Operation Analysis Weekly Report")
 
 fig, ax = plt.subplots()
 
-plots = lw_date.plot(ax=ax, kind="bar", x="collection_week",
-                     y="count", xlabel="Collection Weeks", ylabel="Count")
+# Plot for question 1
+plot_1 = records.plot(ax=ax,
+                      kind="bar",
+                      x="collection_week",
+                      y="count",
+                      xlabel="Collection Weeks",
+                      ylabel="Count")
 
-
-st.table(lw_date)
+# Table for question 1
+st.table(records)
 # st.write(tabulate(lw_date, headers=lw_date.columns, tablefmt='simple'))
 
-for bar in plots.patches:
+# Annotation for plot of question 1
+for bar in plot_1.patches:
     plt.annotate(format(bar.get_height()),
                  (bar.get_x() + bar.get_width() / 2,
                  bar.get_height()), ha='center', va='center',
@@ -130,16 +207,20 @@ for bar in plots.patches:
 
 ax.get_legend().remove()
 
+
 st.pyplot(fig)
 # plt.show()
 
-
-plots1 = beds.plot(kind="bar", x="collection_week", xlabel="Beds Status",
+# Plot for question 2
+plot_2 = beds.plot(kind="bar",
+                   x="collection_week",
+                   xlabel="Beds Status",
                    ylabel="Total")
-
+# Table for question 2
 print(tabulate(beds, headers=beds.columns, tablefmt='psql'))
 
-for bar in plots1.patches:
+# Annotation for plot of question 2
+for bar in plot_2.patches:
     plt.annotate(format(bar.get_height()),
                  (bar.get_x() + bar.get_width() / 2,
                  bar.get_height()), ha='center', va='center',
@@ -149,14 +230,18 @@ for bar in plots1.patches:
 plt.legend(loc='best', bbox_to_anchor=(0.5, 0., 0.5, 0.5))
 plt.show()
 
+# Plot for question 3
+plot_3 = quality.plot(kind="bar",
+                      x="overall_quality_rating",
+                      xlabel="Ratings",
+                      ylabel="Beds in Use")
 
-plots2 = quality.plot(kind="bar", x="overall_quality_rating",
-                      xlabel="Ratings", ylabel="Beds in Use")
-
+# Table for question 3
 print(tabulate(quality, headers=quality.columns,
                tablefmt='psql'))
 
-for bar in plots2.patches:
+# Annotation for plot of question 3
+for bar in plot_3.patches:
     plt.annotate(format(bar.get_height()),
                  (bar.get_x() + bar.get_width() / 2,
                  bar.get_height()), ha='center', va='center',
@@ -167,13 +252,18 @@ plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.05),
            ncol=3, fancybox=True, shadow=True)
 plt.show()
 
-plots3 = covid.plot(kind="bar", x="collection_week",
-                    xlabel="Total", ylabel="Beds in Use")
+# Plot for question 4
+plot_4 = covid.plot(kind="bar",
+                    x="collection_week",
+                    xlabel="Total",
+                    ylabel="Beds in Use")
 
+# Table for question 4
 print(tabulate(covid, headers=covid.columns,
                tablefmt='psql'))
 
-for bar in plots3.patches:
+# Annotation for plot of question 4
+for bar in plot_4.patches:
     plt.annotate(format(bar.get_height()),
                  (bar.get_x() + bar.get_width() / 2,
                  bar.get_height()), ha='center', va='center',
@@ -183,15 +273,21 @@ for bar in plots3.patches:
 plt.legend(loc='best')
 plt.show()
 
-fig = px.choropleth(df,
-                    locations='state',
-                    locationmode="USA-states",
-                    scope="usa",
-                    color='total_covid_cases',
-                    color_continuous_scale="Viridis_r",
-                    )
-fig.show()
+# Plot for question 5
+plot_5 = px.choropleth(map_1,
+                       locations='state',
+                       locationmode="USA-states",
+                       scope="usa",
+                       color='total_covid_cases',
+                       color_continuous_scale="Viridis_r",
+                       )
+plot_5.show()
 
-print(tabulate(df, headers=df.columns, tablefmt='psql'))
-print(tabulate(df5, headers=df5.columns, tablefmt='psql'))
-print(tabulate(df6, headers=df6.columns, tablefmt='psql'))
+# Table for queation 5
+print(tabulate(map_1, headers=map_1.columns, tablefmt='psql'))
+
+# Table for queation 6
+print(tabulate(covid_2, headers=covid_2.columns, tablefmt='psql'))
+
+# Table for queation 7
+print(tabulate(covid_3, headers=covid_3.columns, tablefmt='psql'))

@@ -7,8 +7,8 @@ import sys
 
 # Connect to the sculptor
 conn = psycopg.connect(
-    host="sculptor.stat.cmu.edu", dbname="hireng",
-    user="hireng", password="aiVee0Ohs"
+    host="sculptor.stat.cmu.edu", dbname="ruilinw",
+    user="ruilinw", password="Eip8oosei"
 )
 cur = conn.cursor()
 n_start = pd.read_sql_query("select count(*) from hospital_info;",
