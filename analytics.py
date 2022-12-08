@@ -118,9 +118,8 @@ plots = lw_date.plot(ax=ax, kind="bar", x="collection_week",
                      y="count", xlabel="Collection Weeks", ylabel="Count")
 
 
-
 st.table(lw_date)
-#st.write(tabulate(lw_date, headers=lw_date.columns, tablefmt='simple'))
+# st.write(tabulate(lw_date, headers=lw_date.columns, tablefmt='simple'))
 
 for bar in plots.patches:
     plt.annotate(format(bar.get_height()),
