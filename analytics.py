@@ -217,9 +217,9 @@ st.title("Hospital Operation Analysis Weekly Report %s" % (sys.argv[1]))
 
 st.subheader("Summary of Hospitals Added")
 
-st.markdown("We analyze here how many hospitals have been added in the"
-            "respective weeks. The system allows the readers to view the"
-            "number of weekly data loaded. In the first column, the"
+st.markdown("We analyze here how many hospitals have been added in the "
+            "respective weeks. The system allows the readers to view the "
+            "number of weekly data loaded. In the first column, the "
             "table consists of the updated week. In the second column, "
             "the table displays the number of new uploads that have "
             "been made to the database.")
@@ -302,12 +302,11 @@ st.table(beds.style.format({
 
 st.write("##")
 
-st.markdown("From Table 2, we can interpret the differet types of beds "
+st.markdown("From Table 2, we can interpret the different types of beds "
             "available and occupied for the four different weeks just "
             "before the week we generate the report for.")
 
 st.write("##")
-
 
 st.subheader("Plot for Hospitals on the Basis of Quality")
 
@@ -443,8 +442,8 @@ st.write("##")
 
 st.subheader("States with the Highest Increase in the Number of COVID Cases")
 
-st.markdown("This table displays the number of increased patient occupancy"
-            " for COVID cases per each State. Specifically, the number of "
+st.markdown("This table displays the number of increased patient occupancy "
+            "for COVID cases per each State. Specifically, the number of "
             "patients would be ordered in descending order, showing the State "
             "with the highest number of increase in the COVID patients "
             "compared to the last week’s data.")
