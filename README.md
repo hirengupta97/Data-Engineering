@@ -47,7 +47,7 @@ Once again, we begin with data cleaning: we replace Nan values to None, which al
 
 ### analytics.py
 
-In this file, we create SQL queries to generate analytic graphs and tables for 7 analytical highlights with regards to the uploaded data (HHS and CMS). The points addressed in this analytic report are as follows:
+In this file, we create SQL queries to generate analytic graphs and tables for 7 analytic highlights with regards to the uploaded data (HHS and CMS). The points addressed in this analytic report are as follows:
 
 * A summary of how many hospital records were loaded in the most recent week, and how that compares to previous weeks.
 * A table summarizing the number of adult and pediatric beds available this week, the number used, and the number used by patients with COVID, compared to the 4 most recent weeks
