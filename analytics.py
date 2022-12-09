@@ -255,6 +255,8 @@ st.table(records)
 # Table for question 2
 # print(tabulate(beds, headers=beds.columns, tablefmt='psql'))
 
+st.write("##")
+
 st.subheader("Summary of Bed Operation")
 
 st.markdown("The table allows the readers to view the number of "
@@ -263,6 +265,8 @@ st.markdown("The table allows the readers to view the number of "
             "pediatric beds, and their occupancy (total number of beds "
             "occupied by adults or pediatric patients respectively, "
             "as well as the COVID patients, regardless of the age group)")
+
+st.write("##")
 
 st.caption("Table 2: Availability for Hospitals by week")
 
@@ -296,6 +300,15 @@ st.table(beds.style.format({
 
 # st.pyplot(fig2)
 
+st.write("##")
+
+st.markdown("From Table 2, we can interpret the differet types of beds "
+            "available and occupied for the four different weeks just "
+            "before the week we generate the report for.")
+
+st.write("##")
+
+
 st.subheader("Plot for Hospitals on the Basis of Quality")
 
 st.markdown("The plot provides a visual representation of what is "
@@ -303,6 +316,8 @@ st.markdown("The plot provides a visual representation of what is "
             "perspective on high-quality and low-quality beds where "
             "quality ranges from 1 to 5 and the empty row value for "
             "rating stands for no rating.")
+
+st.write("##")
 
 st.caption("Figure 1: Classification of Hospitals by Ratings")
 
@@ -338,6 +353,7 @@ ax3.get_legend().remove()
 
 st.pyplot(fig3)
 
+st.write("##")
 
 st.subheader("Plot for Hospital Beds Occupied on the Basis of Type of Case")
 
@@ -381,6 +397,8 @@ ax4.get_legend().remove()
 st.pyplot(fig4)
 # plt.show()
 
+st.write("##")
+
 st.subheader("Map Visualization of COVID Cases by State")
 
 st.markdown("This is a map visualization of the number of COVID "
@@ -405,6 +423,13 @@ plot_5 = px.choropleth(map_1,
 # plot_5.show()
 st.plotly_chart(plot_5)
 
+st.markdown("The map is an interactive map that shows the states with the "
+            "covid cases. Ideally, it would be a better visual in an html "
+            "form compared to the pdf form as you can see the numbers for "
+            "each state when you put the cursor on the state. This map "
+            "fails to incorporate the results for the different zip codes "
+            "or county.")
+
 # Table for queation 5
 # print(tabulate(map_1, headers=map_1.columns, tablefmt='psql'))
 
@@ -413,6 +438,8 @@ st.plotly_chart(plot_5)
 # Table for queation 6
 # print(tabulate(covid_2, headers=covid_2.columns, tablefmt='psql'))
 
+
+st.write("##")
 
 st.subheader("States with the Highest Increase in the Number of COVID Cases")
 
@@ -429,11 +456,23 @@ covid_2.columns = ["State", "COVID Cases of Current Week",
 
 covid_3.columns = ["Hospital Name", "Address", "Difference"]
 
+st.write("##")
+
+
 st.table(covid_2.style.format({
     "COVID Cases of Current Week": "{:.0f}",
     "COVID cases of Last Week": "{:.0f}",
     "Difference": "{:.0f}"
     }))
+
+st.write("##")
+
+st.markdown("The first row in the table is showing the State with the "
+            "highest new incidence of COVID patients. Each row in the list "
+            "are the States in descending order with respect to the number "
+            "of newly added cases of COVID patients.")
+
+st.write("##")
 
 st.subheader("Hospital with the Highest Increase in the Number of COVID Cases")
 
