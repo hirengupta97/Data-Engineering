@@ -1,7 +1,17 @@
 # Data-Engineering
 We will be developing a data pipeline for the unstructured and messy data that has been provided to produce a structured SQL database, and automate the data updates and generate efficient and meaningful automated reports. The data provided will be from the US Department of Health and Human Services (HHS) about hospitals functioning in the country. The data includes over a hundred variables, we will be focusing at roughly thirty variables for our database and analysis through automated reports.
 
-Specifically, in this Github there are three main components: schema.sql, load-hhs.py, and load-quality.py. Each file works as follows:
+Specifically, in this Github there are three main components: schema.sql, load-hhs.py, and load-quality.py. 
+
+### Steps to generate weekly reports
+1. Run load-hhs.py file with argument of the name of the csv file in terminal to load HHS data for each week:
+   "python load-hhs.py 2022-01-04-hhs-data.csv"
+2. Run load-quality.py file with arguments of date of the records and name of csv file in terminal to load CMS data for each month:
+   "python load-quality.py 2021-07-01 Hospital_General_Information-2021-07.csv"
+3. Run analytics.py file with argument of date for weekly report in terminal to generate the report in streamlit interactive platform:
+   "python analytics.py 2022-09-30"
+
+The detailed information for the files in this Github is as follows: 
 
 ### schema.sql
 In this file, we identified three schemas - hospital_info, hospital_weekly, and hospital_quality. Each schema works as follows:
