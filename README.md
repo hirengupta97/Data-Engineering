@@ -36,10 +36,25 @@ We begin with data cleaning: we replace Nan values to None, which allows Python 
 
 ### load-quality.py
 
-In this file, we create one execution functions. 
+In this file, we create one execution function. 
 
-For table3: Upate the table hospital_quality, which stores irregular updates about hospital quality information. Since these are also changing information, instead of ON CONFLICT DO NOTHING, we perform try-except clause, for which allows us to take an action (e.g. store the fail-to-insert data into a different dataframe) in the incident of any failure.
+For table3: Update the table hospital_quality, which stores irregular updates about hospital quality information. Since these are also changing information, instead of ON CONFLICT DO NOTHING, we perform try-except clause, for which allows us to take an action (e.g. store the fail-to-insert data into a different dataframe) in the incident of any failure.
 
 (Please check individual files for specific comments.)
 
 Once again, we begin with data cleaning: we replace Nan values to None, which allows Python to recognize None = null values for our qunatitative analysis later. Then, we insert each row of the dataset to SQL table using SQL INSERT VALUE INTO query. In order to perform this, we need to perform for-loop execution for every row in the dataframe, identify each column in the dataframe (as pre-defined from SQL schema), and insert those values into the appropriate variable location within the schema. 
+
+
+### analytics.py
+
+In this file, we create SQL queries to generate analytic graphs and tables for 7 analytical highlights with regards to the uploaded data (HHS and CMS). The points addressed in this analytic report are as follows:
+
+* 1. A summary of how many hospital records were loaded in the most recent week, and how that compares to previous weeks.
+* 2. A table summarizing the number of adult and pediatric beds available this week, the number used, and the number used by patients with COVID, compared to the 4 most recent weeks
+* 3. A graph or table summarizing the fraction of beds currently in use by hospital quality rating, so we can compare high-quality and low-quality hospitals
+* 4. A plot of the total number of hospital beds used per week, over all time, split into all cases and COVID cases
+* 5. A map showing the number of COVID cases by state (the first two digits of a hospital ZIP code is its state)
+* 6. A table of the states in which the number of cases has increased by the most since last week
+* 7. A table of the hospitals (including names and locations) with the largest changes in COVID cases in the last week
+
+In this file, first we import streamlit package to generate our analytic report in HTML format. Then, we generate a grpah or a table that corresponds to each of our analytic topic. Since we are utilizing streamlit (import streamlit as st), the commands such as st.table or st.markdown are used.
