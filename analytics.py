@@ -4,7 +4,6 @@
 import psycopg
 import pandas as pd
 import matplotlib.pyplot as plt
-# from tabulate import tabulate
 import warnings
 import plotly.express as px
 import streamlit as st
@@ -19,13 +18,6 @@ conn = psycopg.connect(
 cur = conn.cursor()
 
 week = sys.argv[1]
-
-# d = pd.read_sql_query("SELECT collection_week, count(*)"
-#                       "FROM hospital_weekly "
-#                       "WHERE collection_week = (SELECT max(collection_week) "
-#                       "FROM hospital_weekly) "
-#                       "GROUP BY collection_week;",
-#                       conn)
 
 # Q1 A summary of how many hospital records were loaded in the most recent
 # week, and how that compares to previous weeks.
@@ -205,16 +197,7 @@ covid_3 = covid_3.set_index(covid_3.index + 1)
 # Implement streamlit
 st.title("Hospital Operation Analysis Weekly Report %s" % (sys.argv[1]))
 
-# fig1, ax1 = plt.subplots()
-
-# Plot for question 1
-# plot_1 = records.plot(ax=ax1,
-#                       kind="bar",
-#                       x="collection_week",
-#                       y="count",
-#                       xlabel="Collection Weeks",
-#                       ylabel="Count")
-
+# Layout for Q1
 st.subheader("Summary of Hospitals Added")
 
 st.markdown("We analyze here how many hospitals have been added in the "
@@ -230,33 +213,10 @@ records.columns = ['Collection Week', 'Number of Hospitals']
 # Table for question 1
 st.caption("Table 1: Count for Hospitals by week")
 st.table(records)
-# st.write(tabulate(lw_date, headers=lw_date.columns, tablefmt='simple'))
-
-# Annotation for plot of question 1
-# for bar in plot_1.patches:
-#     plt.annotate(format(bar.get_height()),
-#                  (bar.get_x() + bar.get_width() / 2,
-#                  bar.get_height()), ha='center', va='center',
-#                  size=10, xytext=(0, 8),
-#                  textcoords='offset points')
-
-# ax1.get_legend().remove()
-
-# st.pyplot(fig1)
-
-# fig2, ax2 = plt.subplots()
-
-# # Plot for question 2
-# plot_2 = beds.plot(ax=ax2,
-#                    kind="bar",
-#                    x="collection_week",
-#                    xlabel="Beds Status",
-#                    ylabel="Total")
-# Table for question 2
-# print(tabulate(beds, headers=beds.columns, tablefmt='psql'))
 
 st.write("##")
 
+# Layout for Q2
 st.subheader("Summary of Bed Operation")
 
 st.markdown("The table allows the readers to view the number of "
@@ -268,6 +228,7 @@ st.markdown("The table allows the readers to view the number of "
 
 st.write("##")
 
+# Table for question 2
 st.caption("Table 2: Availability for Hospitals by week")
 
 beds.columns = ['Collection Week',
@@ -285,21 +246,6 @@ st.table(beds.style.format({
     "COVID Beds Used": "{:.0f}"
     }))
 
-# Annotation for plot of question 2
-# for bar in plot_2.patches:
-#     plt.annotate(format(bar.get_height()),
-#                  (bar.get_x() + bar.get_width() / 2,
-#                  bar.get_height()), ha='center', va='center',
-#                  size=10, xytext=(0, 8),
-#                  textcoords='offset points')
-
-# plt.legend(loc='best', bbox_to_anchor=(0.5, 0., 0.5, 0.5))
-# # plt.show()
-
-# ax2.get_legend().remove()
-
-# st.pyplot(fig2)
-
 st.write("##")
 
 st.markdown("From Table 2, we can interpret the different types of beds "
@@ -308,6 +254,7 @@ st.markdown("From Table 2, we can interpret the different types of beds "
 
 st.write("##")
 
+# Layout for Q3
 st.subheader("Plot for Hospitals on the Basis of Quality")
 
 st.markdown("The plot provides a visual representation of what is "
@@ -331,11 +278,6 @@ plot_3 = quality.plot(ax=ax3,
                       ylabel="Fraction",
                       title="Classification of Hospitals by Ratings")
 
-# Table for question 3
-# print(tabulate(quality, headers=quality.columns, tablefmt='psql'))
-
-# st.table(quality)
-
 # Annotation for plot of question 3
 for bar in plot_3.patches:
     plt.annotate(format(bar.get_height()),
@@ -346,7 +288,6 @@ for bar in plot_3.patches:
 
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.05),
            ncol=3, fancybox=True, shadow=True)
-# plt.show()
 
 ax3.get_legend().remove()
 
@@ -354,6 +295,7 @@ st.pyplot(fig3)
 
 st.write("##")
 
+# Layout for Q4
 st.subheader("Plot for Hospital Beds Occupied on the Basis of Type of Case")
 
 st.markdown("The plot provides a visual representation of what is the "
@@ -375,11 +317,6 @@ plot_4 = covid.plot(ax=ax4,
                     ylabel="Beds in Use",
                     title="Classification of Hospitals by Type of Case")
 
-# Table for question 4
-# print(tabulate(covid, headers=covid.columns, tablefmt='psql'))
-
-# st.table(covid)
-
 # Annotation for plot of question 4
 for bar in plot_4.patches:
     plt.annotate(format(bar.get_height()),
@@ -389,15 +326,14 @@ for bar in plot_4.patches:
                  textcoords='offset points')
 
 plt.legend(loc='best')
-# plt.show()
 
 ax4.get_legend().remove()
 
 st.pyplot(fig4)
-# plt.show()
 
 st.write("##")
 
+# Layout for Q5
 st.subheader("Map Visualization of COVID Cases by State")
 
 st.markdown("This is a map visualization of the number of COVID "
@@ -429,17 +365,9 @@ st.markdown("The map is an interactive map that shows the states with the "
             "fails to incorporate the results for the different zip codes "
             "or county.")
 
-# Table for queation 5
-# print(tabulate(map_1, headers=map_1.columns, tablefmt='psql'))
-
-# st.table(map_1)
-
-# Table for queation 6
-# print(tabulate(covid_2, headers=covid_2.columns, tablefmt='psql'))
-
-
 st.write("##")
 
+# Layout for Q6
 st.subheader("States with the Highest Increase in the Number of COVID Cases")
 
 st.markdown("This table displays the number of increased patient occupancy "
@@ -448,6 +376,7 @@ st.markdown("This table displays the number of increased patient occupancy "
             "with the highest number of increase in the COVID patients "
             "compared to the last week’s data.")
 
+# Table for question 6
 st.caption("Table 3: Highest Number of COVID Cases in States")
 
 covid_2.columns = ["State", "COVID Cases of Current Week",
@@ -473,6 +402,7 @@ st.markdown("The first row in the table is showing the State with the "
 
 st.write("##")
 
+# Layout for Q7
 st.subheader("Hospital with the Highest Increase in the Number of COVID Cases")
 
 st.markdown("This table displays the number of increased patient occupancy "
@@ -481,10 +411,8 @@ st.markdown("This table displays the number of increased patient occupancy "
             "hospital with the highest number of increase in the COVID "
             "patients compared to the last week’s data.")
 
+# Table for question 7
 st.caption("Table 4: Highest Number of COVID Cases in Hospitals")
-
-# Table for queation 7
-# print(tabulate(covid_3, headers=covid_3.columns, tablefmt='psql'))
 
 st.table(covid_3.style.format({
     "Difference": "{:.0f}"
